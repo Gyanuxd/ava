@@ -63,7 +63,7 @@ async def settings_mar(client, message: Message, _):
 @languageCB
 async def gib_repo(client, CallbackQuery, _):
     await CallbackQuery.edit_message_media(
-        InputMediaVideo("https://graph.org/file/69b3f128014d53bca943a.mp4"),
+        InputMediaVideo("https://telegra.ph/file/28cd99b77e752366cd7b7.mp4"),
         reply_markup=InlineKeyboardMarkup(
             [[InlineKeyboardButton(text="✭ʙᴀᴄᴋ✭", callback_data=f"settingsback_helper")]]
         ),
