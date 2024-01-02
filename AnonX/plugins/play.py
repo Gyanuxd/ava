@@ -3,35 +3,37 @@ import string
 from ast import ExceptHandler
 
 from pyrogram import filters
-from pyrogram.types import (InlineKeyboardMarkup, InputMediaPhoto,
+from pyrogram.types import (InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto,
                             Message)
 from pytgcalls.exceptions import NoActiveGroupCall
 
-import config
-from config import BANNED_USERS, lyrical
-from strings import get_command
+from AnonX.utilities import config
+from AnonX.utilities.config import BANNED_USERS, lyrical
+from AnonX.utilities.strings import get_command
 from AnonX import (Apple, Resso, SoundCloud, Spotify, Telegram,
-                        YouTube, app)
-from AnonX.core.call import Anon
-from AnonX.utils import seconds_to_min, time_to_seconds
-from AnonX.utils.channelplay import get_channeplayCB
-from AnonX.utils.database import is_video_allowed
-from AnonX.utils.decorators.language import languageCB
-from AnonX.utils.decorators.play import PlayWrapper
-from AnonX.utils.formatters import formats
-from AnonX.utils.inline.play import (livestream_markup,
+                        YouTube, bot)
+from AnonX.modules.core.call import Kaal
+from AnonX.modules.utils.formatters import seconds_to_min, time_to_seconds
+from AnonX.modules.utils.channelplay import get_channeplayCB
+from AnonX.modules.main.database import is_video_allowed
+from AnonX.modules.main.decorators.language import languageCB
+from AnonX.modules.main.decorators.play import PlayWrapper
+from AnonX.utilities.events.filters import command
+from AnonX.modules.utils.formatters import formats
+from AnonX.utilities.inline.play import (livestream_markup,
                                           playlist_markup,
                                           slider_markup, track_markup)
-from AnonX.utils.inline.playlist import botplaylist_markup
-from AnonX.utils.logger import play_logs
-from AnonX.utils.stream.stream import stream
+from AnonX.modules.main.database import is_served_user
+from AnonX.utilities.inline.playlist import botplaylist_markup
+from AnonX.modules.utils.logger import play_logs
+from AnonX.modules.main.streamer.stream import stream
 
 # Command
 PLAY_COMMAND = get_command("PLAY_COMMAND")
 
 
-@app.on_message(
-    filters.command(PLAY_COMMAND)
+@bot.on_message(
+    command(PLAY_COMMAND)
     & filters.group
     & ~filters.edited
     & ~BANNED_USERS
@@ -48,6 +50,21 @@ async def play_commnd(
     url,
     fplay,
 ):
+    if not await is_served_user(message.from_user.id):
+        await message.reply_text(
+            text="ᴇʀʀᴏʀ, ʏᴏᴜ'ʀᴇ ɴᴏᴛ ᴀ ᴠᴇʀɪғɪᴇᴅ ᴜsᴇʀ.\nᴘʟᴇᴀsᴇ ᴄʟɪᴄᴋ ᴏɴ ᴛʜᴇ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴ ᴛᴏ ᴠᴇʀɪғʏ ʏᴏᴜʀsᴇʟғ.",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ᴠᴇʀɪғʏ",
+                            url=f"https://t.me/{bot.username}?start=verify",
+                        )
+                    ]
+                ]
+            ),
+        )
+        return
     mystic = await message.reply_text(
         _["play_2"].format(channel) if channel else _["play_1"]
     )
@@ -114,7 +131,7 @@ async def play_commnd(
                 err = (
                     e
                     if ex_type == "AssistantErr"
-                    else _["general_3"].format(ex_type)
+                    else _["general_3"].format(e)
                 )
                 return await mystic.edit_text(err)
             return await mystic.delete()
@@ -164,7 +181,7 @@ async def play_commnd(
                 err = (
                     e
                     if ex_type == "AssistantErr"
-                    else _["general_3"].format(ex_type)
+                    else _["general_3"].format(e)
                 )
                 return await mystic.edit_text(err)
             return await mystic.delete()
@@ -208,7 +225,7 @@ async def play_commnd(
                 and not config.SPOTIFY_CLIENT_SECRET
             ):
                 return await mystic.edit_text(
-                    "😁ᴛʜɪs ʙᴏᴛ ᴄᴀɴ'ᴛ ᴩʟᴀʏ sᴩᴏᴛɪғʏ ᴛʀᴀᴄᴋs ᴀɴᴅ ᴩʟᴀʏʟɪsᴛs, ᴩʟᴇᴀsᴇ ᴄᴏɴᴛᴀᴄᴛ ᴍʏ ᴏᴡɴᴇʀ ᴀɴᴅ ᴀsᴋ ʜɪᴍ ᴛᴏ ᴀᴅᴅ sᴩᴏᴛɪғʏ ᴩʟᴀʏᴇʀ."
+                    "ᴛʜɪs ʙᴏᴛ ᴄᴀɴ'ᴛ ᴩʟᴀʏ sᴩᴏᴛɪғʏ ᴛʀᴀᴄᴋs ᴀɴᴅ ᴩʟᴀʏʟɪsᴛs, ᴩʟᴇᴀsᴇ ᴄᴏɴᴛᴀᴄᴛ ᴍʏ ᴏᴡɴᴇʀ ᴀɴᴅ ᴀsᴋ ʜɪᴍ ᴛᴏ ᴀᴅᴅ sᴩᴏᴛɪғʏ ᴩʟᴀʏᴇʀ."
                 )
             if "track" in url:
                 try:
@@ -320,24 +337,24 @@ async def play_commnd(
                 err = (
                     e
                     if ex_type == "AssistantErr"
-                    else _["general_3"].format(ex_type)
+                    else _["general_3"].format(e)
                 )
                 return await mystic.edit_text(err)
             return await mystic.delete()
         else:
             try:
-                await Anon.stream_call(url)
+                await Kaal.stream_call(url)
             except NoActiveGroupCall:
                 await mystic.edit_text(
                     "ᴛʜᴇʀᴇ's ᴀɴ ᴇʀʀᴏʀ ɪɴ ᴛʜᴇ ʙᴏᴛ, ᴩʟᴇᴀsᴇ ʀᴇᴩᴏʀᴛ ɪᴛ ᴛᴏ sᴜᴩᴩᴏʀᴛ ᴄʜᴀᴛ ᴀs sᴏᴏɴ ᴀs ᴩᴏssɪʙʟᴇ."
                 )
-                return await app.send_message(
+                return await bot.send_message(
                     config.LOG_GROUP_ID,
                     "ᴩʟᴇᴀsᴇ ᴛᴜʀɴ ᴏɴ ᴠɪᴅᴇᴏᴄʜᴀᴛ ᴛᴏ sᴛʀᴇᴀᴍ ᴜʀʟ.",
                 )
             except Exception as e:
                 return await mystic.edit_text(
-                    _["general_3"].format(type(e).__name__)
+                    _["general_3"].format(e)
                 )
             await mystic.edit_text(_["str_2"])
             try:
@@ -358,7 +375,7 @@ async def play_commnd(
                 err = (
                     e
                     if ex_type == "AssistantErr"
-                    else _["general_3"].format(ex_type)
+                    else _["general_3"].format(e)
                 )
                 return await mystic.edit_text(err)
             return await play_logs(
@@ -425,7 +442,7 @@ async def play_commnd(
             err = (
                 e
                 if ex_type == "AssistantErr"
-                else _["general_3"].format(ex_type)
+                else _["general_3"].format(e)
             )
             return await mystic.edit_text(err)
         await mystic.delete()
@@ -497,7 +514,7 @@ async def play_commnd(
                 )
 
 
-@app.on_callback_query(filters.regex("MusicStream") & ~BANNED_USERS)
+@bot.on_callback_query(filters.regex("MusicStream") & ~BANNED_USERS)
 @languageCB
 async def play_music(client, CallbackQuery, _):
     callback_data = CallbackQuery.data.strip()
@@ -570,13 +587,13 @@ async def play_music(client, CallbackQuery, _):
         err = (
             e
             if ex_type == "AssistantErr"
-            else _["general_3"].format(ex_type)
+            else _["general_3"].format(e)
         )
         return await mystic.edit_text(err)
     return await mystic.delete()
 
 
-@app.on_callback_query(
+@bot.on_callback_query(
     filters.regex("AnonymousAdmin") & ~BANNED_USERS
 )
 async def anonymous_check(client, CallbackQuery):
@@ -589,8 +606,8 @@ async def anonymous_check(client, CallbackQuery):
         return
 
 
-@app.on_callback_query(
-    filters.regex("AnonPlaylists") & ~BANNED_USERS
+@bot.on_callback_query(
+    filters.regex("SankiPlaylists") & ~BANNED_USERS
 )
 @languageCB
 async def play_playlists_command(client, CallbackQuery, _):
@@ -680,13 +697,13 @@ async def play_playlists_command(client, CallbackQuery, _):
         err = (
             e
             if ex_type == "AssistantErr"
-            else _["general_3"].format(ex_type)
+            else _["general_3"].format(e)
         )
         return await mystic.edit_text(err)
     return await mystic.delete()
 
 
-@app.on_callback_query(filters.regex("slider") & ~BANNED_USERS)
+@bot.on_callback_query(filters.regex("slider") & ~BANNED_USERS)
 @languageCB
 async def slider_queries(client, CallbackQuery, _):
     callback_data = CallbackQuery.data.strip()
@@ -757,4 +774,4 @@ async def slider_queries(client, CallbackQuery, _):
         )
         return await CallbackQuery.edit_message_media(
             media=med, reply_markup=InlineKeyboardMarkup(buttons)
-        )
+  )
