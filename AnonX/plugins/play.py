@@ -3,29 +3,28 @@ import string
 from ast import ExceptHandler
 
 from pyrogram import filters
-from pyrogram.types import (InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto,
+from pyrogram.types import (InlineKeyboardMarkup, InputMediaPhoto,
                             Message)
 from pytgcalls.exceptions import NoActiveGroupCall
+
 import config
-from AnonX.utilities.config import BANNED_USERS, lyrical
-from AnonX.utilities.strings import get_command
+from config import BANNED_USERS, lyrical
+from strings import get_command
 from AnonX import (Apple, Resso, SoundCloud, Spotify, Telegram,
-                        YouTube, bot)
-from AnonX.modules.core.call import Kaal
-from AnonX.modules.utils.formatters import seconds_to_min, time_to_seconds
-from AnonX.modules.utils.channelplay import get_channeplayCB
-from AnonX.modules.main.database import is_video_allowed
-from AnonX.modules.main.decorators.language import languageCB
-from AnonX.modules.main.decorators.play import PlayWrapper
-from AnonX.utilities.events.filters import command
-from AnonX.modules.utils.formatters import formats
-from AnonX.utilities.inline.play import (livestream_markup,
+                        YouTube, app)
+from AnonX.core.call import Anon
+from AnonX.utils import seconds_to_min, time_to_seconds
+from AnonX.utils.channelplay import get_channeplayCB
+from AnonX.utils.database import is_video_allowed
+from AnonX.utils.decorators.language import languageCB
+from AnonX.utils.decorators.play import PlayWrapper
+from AnonX.utils.formatters import formats
+from AnonX.utils.inline.play import (livestream_markup,
                                           playlist_markup,
                                           slider_markup, track_markup)
-from AnonX.modules.main.database import is_served_user
-from AnonX.utilities.inline.playlist import botplaylist_markup
-from AnonX.modules.utils.logger import play_logs
-from AnonX.modules.main.streamer.stream import stream
+from AnonX.utils.inline.playlist import botplaylist_markup
+from AnonX.utils.logger import play_logs
+from AnonX.utils.stream.stream import stream
 
 # Command
 PLAY_COMMAND = get_command("PLAY_COMMAND")
