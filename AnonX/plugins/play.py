@@ -30,7 +30,7 @@ from AnonX.utils.stream.stream import stream
 PLAY_COMMAND = get_command("PLAY_COMMAND")
 
 
-@bot.on_message(
+@app.on_message(
     command(PLAY_COMMAND)
     & filters.group
     & ~filters.edited
