@@ -6,8 +6,7 @@ from pyrogram import filters
 from pyrogram.types import (InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto,
                             Message)
 from pytgcalls.exceptions import NoActiveGroupCall
-
-from AnonX.utilities import config
+import config
 from AnonX.utilities.config import BANNED_USERS, lyrical
 from AnonX.utilities.strings import get_command
 from AnonX import (Apple, Resso, SoundCloud, Spotify, Telegram,
